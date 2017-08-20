@@ -12,7 +12,7 @@ class lpoApp:
     def __init__(self, master):
 
         self.master = master
-        self.createGUI()
+        self._createGUI()
         self.database = lpoDB.lpoDB()
         self.master.protocol("WM_DELETE_WINDOW", self._safe_close)
 
@@ -32,7 +32,7 @@ class lpoApp:
         #create and display header frame with image
         self.frame_header = ttk.Frame(self.master)
         self.frame_header.pack(side = TOP)
-        self.logo = PhotoImage(file='lpo_logo.gif')
+        self.logo = PhotoImage(file='python.gif')
         ttk.Label(self.frame_header, image = self.logo).pack()
 
         #create and display frame to hold user input widgets
@@ -139,5 +139,4 @@ def main():
     app = lpoApp(root)
     root.mainloop()
 
-if __name__ == '__main__':
-    main()
+if __name__ == '__main__': main()
