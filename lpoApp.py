@@ -2,9 +2,6 @@ from tkinter import *
 from tkinter import ttk
 from statistics import mean, median
 from datetime import date
-
-from kivy.modules._webdebugger import background_jpg
-
 import lpoDB
 
 __version__ = '0.3.2'
@@ -89,16 +86,51 @@ class lpoApp:
 
         ttk.Button(self.frame_input, text='Submit',
                    command=self._submit_callback).grid(row=2, column=0, columnspan=9, padx=5)
-        self.frame_result = ttk.Frame
+
+        #create a frame to display results, but do not show it yet
+        self.frame_result = ttk.Frame(self.master)
+
+        ttk.Label(self.frame_result, text='Mean: ').grid(row=1, column=0, padx=5)
+        ttk.Label(self.frame_result, text='Median: ').grid(row=2, column=0, padx=5)
+
+        ttk.Label(self.frame_result, text='Air\nTemp: ',
+                  justify=CENTER).grid(row=0, column=2, sticky='e', padx=5)
+        ttk.Label(self.frame_result, text='Barometric\nPressure: ',
+                  justify=CENTER).grid(row=0, column=3, sticky='e', padx=5)
+        ttk.Label(self.frame_result, text='Wind\nSpeed: ',
+                  justify=CENTER).grid(row=0, column=1, sticky='e', padx=5)
+
+        self.air_temp_mean = StringVar()
+        self.air_temp_median = StringVar()
+        self.barometric_press_mean = StringVar()
+        self.barometric_press_median = StringVar()
+        self.wind_speed_mean = StringVar()
+        self.wind_speed_median = StringVar()
+
+        ttk.Label(self.frame_result, textvariable = self.air_temp_mean,
+                  style = 'Result.TLabel').grid(row=1, column=2)
+        ttk.Label(self.frame_result, textvariable = self.air_temp_median,
+                  style = 'Result.TLabel').grid(row=2, column=2)
+        ttk.Label(self.frame_result, textvariable = self.barometric_press_mean,
+                  style = 'Result.TLabel').grid(row=1, column=3)
+        ttk.Label(self.frame_result, textvariable = self.barometric_press_median,
+                  style = 'Result.TLabel').grid(row=2, column=3)
+        ttk.Label(self.frame_result, textvariable = self.wind_speed_mean,
+                  style = 'Result.TLabel').grid(row=1, column=1)
+        ttk.Label(self.frame_result, textvariable = self.air_temp_median,
+                  style = 'Result.TLabel').grid(row=2, column=1)
 
 
 
 
-    def _submit_callback(self):
 
-    def _safe_close(self):
-        self.database.close()
-        self.master.destroy()
+
+
+    #def _submit_callback(self):
+
+    #def _safe_close(self):
+     #   self.database.close()
+      #  self.master.destroy()
 
 
 
@@ -107,3 +139,5 @@ def main():
     app = lpoApp(root)
     root.mainloop()
 
+if __name__ == '__main__':
+    main()
