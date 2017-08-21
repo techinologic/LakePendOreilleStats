@@ -1,8 +1,7 @@
-from tkinter import *
-from tkinter import ttk
-from statistics import mean, median
 from datetime import date
-import lpoDB
+from statistics import mean, median
+from tkinter import *
+from tkinter import ttk, messagebox
 
 __version__ = '0.3.2'
 
@@ -13,8 +12,8 @@ class lpoApp:
 
         self.master = master
         self._createGUI()
-        self.database = lpoDB.lpoDB()
-        self.master.protocol("WM_DELETE_WINDOW", self._safe_close)
+        # self.database = lpoDB.lpoDB()
+        # self.master.protocol("WM_DELETE_WINDOW", self._safe_close)
 
     def _createGUI(self):
         # configure gui style of app
@@ -120,18 +119,69 @@ class lpoApp:
         ttk.Label(self.frame_result, textvariable = self.air_temp_median,
                   style = 'Result.TLabel').grid(row=2, column=1)
 
+    def _submit_callback(self):
 
+        try:
+            start = date(int(self.start_year.get()),
+                         self.months.index(self.start_month.get()) + 1,
+                         int(self.start_day.get()))
+            end = date(int(self.end_year.get()),
+                       self.months.index(self.end_month.get()) + 1,
+                       int(self.end_day.get()))
+        except ValueError as e:
+            messagebox.showerror(title='ValueError',
+                                 message=('INVALID DATE\n'
+                                          'Correct format is "DD Mon YYYY"'))
 
+            # reset default start and end dates to todays
+            self.start_day.set(date.today().day)
+            self.start_month.set(self.months[date.today().month - 1])
+            self.start_year.set(date.today().year)
+            self.end_day.set(date.today().day)
+            self.end_month.set(self.months[date.today().month - 1])
+            self.end_year.set(date.today().year)
+            return
 
+        if (start < date(2001, 1, 12)) or (end > date.today() or (start > end)):
+            messagebox.showerror(title='Value Error',
+                                 message=('INVALID DATE RANGE\nStart Date: {}\nEnd Date: {}\n'
+                                          'Dates must be between 2001-1-12 and {}.\n'
+                                          'Start Date must be <= End Date.')).format(start, end)
+            return
+        data = list(self.database.get_data_for_range(start, end))
+        if data != []:
 
+            # the lists will hold all values from date range for each weather parameter
+            dict_of_lists = dict(Air_Temp=[], Barometric_Press=[], Wind_Speed=[])
 
+            for entry in data:
+                for key in dict_of_lists.keys():
+                    dict_of_lists[key].append(entry[key])
 
-    #def _submit_callback(self):
+            # calculate the mean and median for each type of data; store result in dictionaries
+            result = {}
+            for key in dict_of_lists.keys():
+                result[key] = dict(mean=mean(dict_of_lists[key]),
+                                   median=median(dict_of_lists[key]))
 
-    #def _safe_close(self):
-     #   self.database.close()
-      #  self.master.destroy()
+            # set stringVars associated with results labels
+            self.air_temp_mean.set('{0:.2f}'.format(result['Air_Temp']['mean']))
+            self.air_temp_median.set('{0:.2f}'.format(result['Air_Temp']['median']))
+            self.barometric_press_mean.set('{0:.2f}'.format(result['Barometric_Press']['mean']))
+            self.barometric_press_median.set('{0:.2f}'.format(result['Barometric_Press']['median']))
+            self.wind_speed_mean.set('{0:.2f}'.format(result['Wind_Speed']['mean']))
+            self.wind_speed_median.set('{0:.2f}'.format(result['Wind_Speed']['median']))
 
+            # display the results frame
+            self.frame_result.pack(side=TOP)
+
+        else:
+            # if this request did not produce results, hide the results frame
+            self.frame_result.forget()
+
+    def _safe_close(self):
+        self.database.close()
+        self.master.destroy()
 
 
 def main():
