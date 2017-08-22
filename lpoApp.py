@@ -7,7 +7,6 @@ __version__ = '0.3.2'
 
 class lpoApp:
 
-
     def __init__(self, master):
 
         self.master = master
@@ -182,7 +181,6 @@ class lpoApp:
     def _safe_close(self):
         self.database.close()
         self.master.destroy()
-
 
 def main():
     root = Tk()
