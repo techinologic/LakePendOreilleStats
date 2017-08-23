@@ -11,7 +11,7 @@ class lpoDB():
         self.db.row_factory = sqlite3.Row
         self.db.execute(
             '''CREATE TABLE IF NOT EXISTS {} (Date TEXT, Time TEXT, Status TEXT, Air_Temp FLOAT, Barometric_Press FLOAT, Wind_Speed FLOAT)'''.format(
-                self.table)
+                self.table))
 
     def __iter__(self):
         """
@@ -25,6 +25,12 @@ class lpoDB():
         for year in range(start.year, 2007):
             if list(self._get_status_for_range(date(year, 1, 12), date(year, 1, 12))) == []:
                 dates_to_update.append(date(year, 1, 12))
+
+    def _get_status_for_range(self, start, end):
+
+    def _update_data_for_date(self, date, partial):
+
+
 
     def clear(self):
         """
