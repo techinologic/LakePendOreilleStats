@@ -21,6 +21,10 @@ class lpoDB():
         for row in cursor: yield dict(row)
 
     def get_data_for_range(self, start, end):
+        dates_to_update = []
+        for year in range(start.year, 2007):
+            if list(self._get_status_for_range(date(year, 1, 12), date(year, 1, 12))) == []:
+                dates_to_update.append(date(year, 1, 12))
 
     def clear(self):
         """
@@ -29,3 +33,5 @@ class lpoDB():
         self.db.execute('DROP TABLE IF EXIST {}'.format(self.table))
 
     def close(self):
+        self.db.close()
+        del self.filename
