@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date, datetime
 
 __version__ = '0.3.2'
 
@@ -36,6 +37,24 @@ class lpoDB():
 
         # generate a list of dates between temp start and end
         delta = end - temp_start
+        for d in range(delta.days + 1):
+            dates_to_update.append(temp_start + timedelta(days=d))
+
+        statuses = list(self._get_status_for_range(temp_start, end))
+
+        # remove all dates from dates_to_update that have a completed or partial status
+        for entry in statuses:
+            if entry['Status'] == 'COMPLETE':
+                dates_to_update.remove(datetime.strptime(str(entry['Date']), '%Y%m%d').date())
+            elif entry['Status'] == 'PARTIAL':
+                try:
+                    self._update_data_for_date(datetime.strptime(str(entry['Date']), '%Y%m%d').date())
+                except:
+                    raise
+                dates_to_update.remove(datetime.strptime(str(entry['Date']), '%Y%m%d').date())
+
+
+
 
     def _get_status_for_range(self, start, end):
 
